@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Mansonry Family - Administrator</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+
+      <div class="brand">
+        <h2>MANSONRY FAMILY</h2>
+        <span>Administrator Messages</span>
+      </div>
+
+      <a
+        href="index.html"
+        class="main-link"
+      >
+        Member Chat
+      </a>
+
+    </header>
+
+
+    <!-- ADMIN CHAT -->
+    <main class="chat-section">
+
+      <!-- MEMBER LIST -->
+      <aside class="chat-sidebar">
+
+        <div class="sidebar-title">
+          <h3>Members</h3>
+        </div>
+
+        <div id="memberList">
+
+          <!-- Members will be loaded by admin.js -->
+
+        </div>
+
+      </aside>
+
+
+      <!-- CONVERSATION -->
+      <section class="conversation">
+
+        <div class="conversation-header">
+
+          <h3 id="selectedMember">
+            Select a member
+          </h3>
+
+          <span>
+            Private administrator conversation
+          </span>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+        <div
+          id="adminMessages"
+          class="messages"
+        >
+
+          <div class="welcome-message">
+
+            <strong>
+              Administrator Messages
+            </strong>
+
+            <p>
+              Select a member from the list
+              to view their conversation.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- REPLY FORM -->
+        <form
+          class="message-form"
+          onsubmit="sendAdminMessage(event)"
+        >
+
+          <input
+            type="text"
+            id="adminMessage"
+            placeholder="Write a reply..."
+            autocomplete="off"
+          >
+
+          <button type="submit">
+            Send
+          </button>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- ADMIN JAVASCRIPT -->
+  <script src="admin.js"></script>
+
+</body>
+
+</html>
