@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Mansonry Family | Private Member Chat</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+      <div class="brand">
+        <h2>MANSONRY FAMILY</h2>
+        <span>Private Member Chat</span>
+      </div>
+
+      <a
+        href="https://mansoryfamily.github.io/MANSONRY-FAMILY-FRATERNITY-/"
+        class="main-link"
+      >
+        Main Platform
+      </a>
+    </header>
+
+
+    <!-- MEMBER LOGIN -->
+    <main class="login-section" id="login">
+
+      <div class="login-card">
+
+        <div class="logo-circle">
+          M
+        </div>
+
+        <h1>Private Member Chat</h1>
+
+        <p>
+          Send a private message directly to the
+          Mansonry Family administrator.
+        </p>
+
+        <label for="name">Full Name</label>
+
+        <input
+          type="text"
+          id="name"
+          placeholder="Enter your full name"
+          autocomplete="name"
+        >
+
+
+        <label for="memberId">Member ID</label>
+
+        <input
+          type="text"
+          id="memberId"
+          placeholder="Enter your Member ID"
+        >
+
+
+        <button
+          type="button"
+          onclick="startChat()"
+          class="enter-button"
+        >
+          Enter Private Chat
+        </button>
+
+
+        <div class="privacy-note">
+          🔒 Your conversation is private and intended
+          only for you and the administrator.
+        </div>
+
+      </div>
+
+    </main>
+
+
+    <!-- PRIVATE CHAT -->
+    <main class="chat-section hidden" id="chat">
+
+      <!-- SIDEBAR -->
+      <aside class="chat-sidebar">
+
+        <div class="sidebar-title">
+          <h3>My Conversation</h3>
+        </div>
+
+        <div class="member-information">
+
+          <div class="member-avatar">
+            M
+          </div>
+
+          <div>
+            <strong id="memberLabel">
+              Member
+            </strong>
+
+            <small>
+              Private conversation
+            </small>
+          </div>
+
+        </div>
+
+
+        <div class="admin-status">
+
+          <span class="status-dot"></span>
+
+          <div>
+            <strong>Administrator</strong>
+            <small>Message privately</small>
+          </div>
+
+        </div>
+
+
+        <button
+          class="logout-button"
+          onclick="logout()"
+        >
+          Sign Out
+        </button>
+
+      </aside>
+
+
+      <!-- CONVERSATION -->
+      <section class="conversation">
+
+        <div class="conversation-header">
+
+          <div>
+            <h3>Mansonry Family Administrator</h3>
+
+            <span>
+              Private conversation
+            </span>
+          </div>
+
+        </div>
+
+
+        <!-- MESSAGES -->
+        <div
+          class="messages"
+          id="messages"
+        >
+
+          <div class="welcome-message">
+
+            <strong>Welcome to the private chat.</strong>
+
+            <p>
+              You can send a message directly to the
+              administrator. Other members cannot see
+              your conversation.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- MESSAGE FORM -->
+        <form
+          class="message-form"
+          onsubmit="sendMessage(event)"
+        >
+
+          <input
+            type="text"
+            id="message"
+            placeholder="Write your message..."
+            autocomplete="off"
+          >
+
+          <button type="submit">
+            Send
+          </button>
+
+        </form>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+  <script src="app.js"></script>
+
+</body>
+</html>
