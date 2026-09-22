@@ -72,6 +72,11 @@
       font-size: 15px;
     }
 
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
     .primary {
       background: #111827;
       color: white;
@@ -154,6 +159,11 @@
       background: #dcfce7;
       color: #166534;
     }
+
+    .info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
   </style>
 </head>
 
@@ -165,13 +175,16 @@
     <span>Private Member Chat</span>
   </div>
 
-  <button id="logoutBtn" class="logout hidden">Logout</button>
+  <button id="logoutBtn" class="logout hidden">
+    Logout
+  </button>
 </header>
 
 <div class="container">
 
   <!-- LOGIN -->
   <div id="loginCard" class="card">
+
     <h3>Member Login</h3>
 
     <p>Sign in to your private member chat.</p>
@@ -195,7 +208,9 @@
     <button id="loginBtn" class="primary">
       Sign In
     </button>
+
   </div>
+
 
   <!-- CHAT -->
   <div id="chatCard" class="card hidden">
@@ -209,6 +224,7 @@
     <div id="messages"></div>
 
     <div class="send-row">
+
       <input
         id="messageInput"
         type="text"
@@ -216,52 +232,79 @@
         placeholder="Write your message..."
       >
 
-      <button id="sendBtn">Send</button>
+      <button id="sendBtn">
+        Send
+      </button>
+
     </div>
 
   </div>
 
 </div>
 
-<script>alert("TEST WORKS");</script>
-<script>
-  alert("JavaScript is running");
-  // ================================
-  // SUPABASE CONFIGURATION
-  // ================================
 
-  const SUPABASE_URL = "https://rsinxyyxjyasapophbgv.supabase.co
+<script>
+  // ==================================================
+  // SUPABASE CONFIGURATION
+  // ==================================================
+
+  const SUPABASE_URL =
+    "https://rsinxyyxjyasapophbgv.supabase.co";
 
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_7hjRDSl_WCP28nPoTWm5tg_1Qjn0cXa";
-alert(window.supabase ? "SUPABASE LOADED" : "SUPABASE NOT LOADED");
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-alert("JavaScript is working");
 
-  // ================================
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  // ==================================================
   // PAGE ELEMENTS
-  // ================================
+  // ==================================================
 
-  const loginCard = document.getElementById("loginCard");
-  const chatCard = document.getElementById("chatCard");
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const loginCard =
+    document.getElementById("loginCard");
 
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
+  const chatCard =
+    document.getElementById("chatCard");
 
-  const loginStatus = document.getElementById("loginStatus");
-  const chatStatus = document.getElementById("chatStatus");
+  const loginBtn =
+    document.getElementById("loginBtn");
 
-  const welcome = document.getElementById("welcome");
-  const messagesBox = document.getElementById("messages");
+  const logoutBtn =
+    document.getElementById("logoutBtn");
 
-  const messageInput = document.getElementById("messageInput");
-  const sendBtn = document.getElementById("sendBtn");
+  const emailInput =
+    document.getElementById("email");
 
+  const passwordInput =
+    document.getElementById("password");
+
+  const loginStatus =
+    document.getElementById("loginStatus");
+
+  const chatStatus =
+    document.getElementById("chatStatus");
+
+  const welcome =
+    document.getElementById("welcome");
+
+  const messagesBox =
+    document.getElementById("messages");
+
+  const messageInput =
+    document.getElementById("messageInput");
+
+  const sendBtn =
+    document.getElementById("sendBtn");
+
+
+  // ==================================================
+  // APPLICATION STATE
+  // ==================================================
 
   let currentUser = null;
   let currentProfile = null;
@@ -269,77 +312,144 @@ alert("JavaScript is working");
   let realtimeChannel = null;
 
 
-  // ================================
+  // ==================================================
   // STATUS MESSAGE
-  // ================================
+  // ==================================================
 
-  function showStatus(element, message, type = "") {
+  function showStatus(
+    element,
+    message,
+    type = ""
+  ) {
     element.textContent = message;
-    element.className = "status " + type;
+
+    element.className =
+      "status " + type;
+
     element.classList.remove("hidden");
   }
 
 
-  // ================================
+  // ==================================================
+  // HIDE STATUS
+  // ==================================================
+
+  function hideStatus(element) {
+    element.classList.add("hidden");
+    element.textContent = "";
+  }
+
+
+  // ==================================================
   // LOGIN
-  // ================================
-alert("LOGIN CODE REACHED");
+  // ==================================================
 
-loginBtn.addEventListener("click", async () => {
-  loginBtn.addEventListener("click", async () => {
+  loginBtn.addEventListener(
+    "click",
+    async function () {
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+      const email =
+        emailInput.value.trim();
 
-    if (!email || !password) {
-      showStatus(
-        loginStatus,
-        "Please enter your email and password.",
-        "error"
-      );
-      return;
+      const password =
+        passwordInput.value;
+
+
+      if (!email || !password) {
+
+        showStatus(
+          loginStatus,
+          "Please enter your email and password.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Signing in...";
+
+      hideStatus(loginStatus);
+
+
+      try {
+
+        const result =
+          await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+
+
+        if (result.error) {
+
+          showStatus(
+            loginStatus,
+            result.error.message,
+            "error"
+          );
+
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Sign In";
+
+          return;
+        }
+
+
+        currentUser =
+          result.data.user;
+
+
+        await loadMember();
+
+
+      } catch (error) {
+
+        showStatus(
+          loginStatus,
+          error.message ||
+            "Unable to sign in. Please try again.",
+          "error"
+        );
+
+      } finally {
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Sign In";
+
+      }
+
     }
-
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Signing in...";
-
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-    loginBtn.disabled = false;
-    loginBtn.textContent = "Sign In";
-
-    if (error) {
-      showStatus(
-        loginStatus,
-        error.message,
-        "error"
-      );
-      return;
-    }
-
-    currentUser = data.user;
-
-    await loadMember();
-  });
+  );
 
 
-  // ================================
+  // ==================================================
   // LOAD MEMBER PROFILE
-  // ================================
+  // ==================================================
 
   async function loadMember() {
 
-    const { data, error } = await supabaseClient
-      .from("profiles")
-      .select("id, full_name, member_id, role")
-      .eq("id", currentUser.id)
-      .single();
+    if (!currentUser) {
+      return;
+    }
 
-    if (error) {
+
+    const result =
+      await supabaseClient
+        .from("profiles")
+        .select(
+          "id, full_name, member_id, role"
+        )
+        .eq(
+          "id",
+          currentUser.id
+        )
+        .single();
+
+
+    if (result.error) {
+
       showStatus(
         loginStatus,
         "Your account is authenticated, but your member profile was not found.",
@@ -347,201 +457,334 @@ loginBtn.addEventListener("click", async () => {
       );
 
       await supabaseClient.auth.signOut();
+
+      currentUser = null;
+
       return;
     }
 
-    currentProfile = data;
+
+    currentProfile =
+      result.data;
+
 
     welcome.textContent =
-      "Welcome, " + currentProfile.full_name;
+      "Welcome, " +
+      currentProfile.full_name;
+
 
     loginCard.classList.add("hidden");
+
     chatCard.classList.remove("hidden");
+
     logoutBtn.classList.remove("hidden");
 
+
     await loadConversation();
+
   }
 
 
-  // ================================
+  // ==================================================
   // LOAD OR CREATE CONVERSATION
-  // ================================
+  // ==================================================
 
   async function loadConversation() {
 
-    let { data, error } = await supabaseClient
-      .from("conversations")
-      .select("id, member_id")
-      .eq("member_id", currentUser.id)
-      .maybeSingle();
-
-    if (error) {
-      showStatus(
-        chatStatus,
-        error.message,
-        "error"
-      );
+    if (!currentUser) {
       return;
     }
 
-    if (!data) {
 
-      const result = await supabaseClient
+    let result =
+      await supabaseClient
         .from("conversations")
-        .insert({
-          member_id: currentUser.id
-        })
-        .select("id, member_id")
-        .single();
+        .select(
+          "id, member_id"
+        )
+        .eq(
+          "member_id",
+          currentUser.id
+        )
+        .maybeSingle();
 
-      if (result.error) {
+
+    if (result.error) {
+
+      showStatus(
+        chatStatus,
+        result.error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    let conversation =
+      result.data;
+
+
+    if (!conversation) {
+
+      const createResult =
+        await supabaseClient
+          .from("conversations")
+          .insert({
+            member_id:
+              currentUser.id
+          })
+          .select(
+            "id, member_id"
+          )
+          .single();
+
+
+      if (createResult.error) {
+
         showStatus(
           chatStatus,
-          result.error.message,
+          createResult.error.message,
           "error"
         );
+
         return;
       }
 
-      data = result.data;
+
+      conversation =
+        createResult.data;
     }
 
-    currentConversation = data;
+
+    currentConversation =
+      conversation;
+
 
     await loadMessages();
+
     subscribeToMessages();
+
   }
 
 
-  // ================================
+  // ==================================================
   // LOAD MESSAGES
-  // ================================
+  // ==================================================
 
   async function loadMessages() {
 
-    const { data, error } = await supabaseClient
-      .from("messages")
-      .select("id, conversation_id, sender_id, body, created_at")
-      .eq("conversation_id", currentConversation.id)
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (error) {
-      showStatus(
-        chatStatus,
-        error.message,
-        "error"
-      );
+    if (!currentConversation) {
       return;
     }
+
+
+    const result =
+      await supabaseClient
+        .from("messages")
+        .select(
+          "id, conversation_id, sender_id, body, created_at"
+        )
+        .eq(
+          "conversation_id",
+          currentConversation.id
+        )
+        .order(
+          "created_at",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (result.error) {
+
+      showStatus(
+        chatStatus,
+        result.error.message,
+        "error"
+      );
+
+      return;
+    }
+
 
     messagesBox.innerHTML = "";
 
-    data.forEach(message => {
-      displayMessage(message);
-    });
+
+    result.data.forEach(
+      function (message) {
+
+        displayMessage(message);
+
+      }
+    );
+
 
     scrollMessages();
+
   }
 
 
-  // ================================
+  // ==================================================
   // DISPLAY MESSAGE
-  // ================================
+  // ==================================================
 
   function displayMessage(message) {
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
+
 
     const mine =
-      message.sender_id === currentUser.id;
+      message.sender_id ===
+      currentUser.id;
+
 
     div.className =
-      "message " + (mine ? "mine" : "admin");
+      "message " +
+      (mine ? "mine" : "admin");
 
-    const body = document.createElement("div");
-    body.textContent = message.body;
 
-    const time = document.createElement("span");
+    const body =
+      document.createElement("div");
+
+    body.textContent =
+      message.body;
+
+
+    const time =
+      document.createElement("span");
+
     time.className = "time";
 
     time.textContent =
-      new Date(message.created_at).toLocaleString();
+      new Date(
+        message.created_at
+      ).toLocaleString();
+
 
     div.appendChild(body);
+
     div.appendChild(time);
 
     messagesBox.appendChild(div);
+
   }
 
 
-  // ================================
+  // ==================================================
   // SEND MESSAGE
-  // ================================
+  // ==================================================
 
   async function sendMessage() {
 
-    const body = messageInput.value.trim();
+    const body =
+      messageInput.value.trim();
 
-    if (!body || !currentConversation) {
+
+    if (
+      !body ||
+      !currentConversation ||
+      !currentUser
+    ) {
       return;
     }
 
+
     sendBtn.disabled = true;
 
-    const { error } = await supabaseClient
-      .from("messages")
-      .insert({
-        conversation_id: currentConversation.id,
-        sender_id: currentUser.id,
-        body
-      });
+
+    const result =
+      await supabaseClient
+        .from("messages")
+        .insert({
+          conversation_id:
+            currentConversation.id,
+
+          sender_id:
+            currentUser.id,
+
+          body: body
+        });
+
 
     sendBtn.disabled = false;
 
-    if (error) {
+
+    if (result.error) {
 
       showStatus(
         chatStatus,
-        error.message,
+        result.error.message,
         "error"
       );
 
       return;
     }
 
+
     messageInput.value = "";
+
   }
 
 
-  sendBtn.addEventListener("click", sendMessage);
+  // ==================================================
+  // SEND BUTTON
+  // ==================================================
+
+  sendBtn.addEventListener(
+    "click",
+    sendMessage
+  );
 
 
-  messageInput.addEventListener("keydown", event => {
+  // ==================================================
+  // ENTER TO SEND
+  // ==================================================
 
-    if (event.key === "Enter") {
-      event.preventDefault();
-      sendMessage();
+  messageInput.addEventListener(
+    "keydown",
+    function (event) {
+
+      if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
     }
+  );
 
-  });
 
-
-  // ================================
+  // ==================================================
   // REALTIME MESSAGES
-  // ================================
+  // ==================================================
 
   function subscribeToMessages() {
 
-    if (realtimeChannel) {
-      supabaseClient.removeChannel(realtimeChannel);
+    if (!currentConversation) {
+      return;
     }
+
+
+    if (realtimeChannel) {
+
+      supabaseClient.removeChannel(
+        realtimeChannel
+      );
+
+      realtimeChannel = null;
+    }
+
 
     realtimeChannel =
       supabaseClient
         .channel(
-          "member-chat-" + currentConversation.id
+          "member-chat-" +
+          currentConversation.id
         )
         .on(
           "postgres_changes",
@@ -553,73 +796,107 @@ loginBtn.addEventListener("click", async () => {
               "conversation_id=eq." +
               currentConversation.id
           },
-          payload => {
+          function (payload) {
 
-            displayMessage(payload.new);
+            displayMessage(
+              payload.new
+            );
+
             scrollMessages();
 
           }
         )
         .subscribe();
+
   }
 
 
-  // ================================
-  // SCROLL CHAT
-  // ================================
+  // ==================================================
+  // SCROLL MESSAGES
+  // ==================================================
 
   function scrollMessages() {
+
     messagesBox.scrollTop =
       messagesBox.scrollHeight;
+
   }
 
 
-  // ================================
+  // ==================================================
   // LOGOUT
-  // ================================
+  // ==================================================
 
-  logoutBtn.addEventListener("click", async () => {
+  logoutBtn.addEventListener(
+    "click",
+    async function () {
 
-    if (realtimeChannel) {
-      await supabaseClient.removeChannel(
-        realtimeChannel
-      );
-      realtimeChannel = null;
+      if (realtimeChannel) {
+
+        await supabaseClient
+          .removeChannel(
+            realtimeChannel
+          );
+
+        realtimeChannel = null;
+      }
+
+
+      await supabaseClient.auth.signOut();
+
+
+      currentUser = null;
+      currentProfile = null;
+      currentConversation = null;
+
+
+      chatCard.classList.add("hidden");
+
+      logoutBtn.classList.add("hidden");
+
+      loginCard.classList.remove("hidden");
+
+
+      emailInput.value = "";
+
+      passwordInput.value = "";
+
+      messagesBox.innerHTML = "";
+
+      hideStatus(loginStatus);
+
     }
-
-    await supabaseClient.auth.signOut();
-
-    currentUser = null;
-    currentProfile = null;
-    currentConversation = null;
-
-    chatCard.classList.add("hidden");
-    logoutBtn.classList.add("hidden");
-    loginCard.classList.remove("hidden");
-
-    emailInput.value = "";
-    passwordInput.value = "";
-    messagesBox.innerHTML = "";
-  });
+  );
 
 
-  // ================================
+  // ==================================================
   // CHECK EXISTING LOGIN
-  // ================================
+  // ==================================================
 
   async function checkSession() {
 
-    const { data } =
+    const result =
       await supabaseClient.auth.getSession();
 
-    if (data.session) {
 
-      currentUser = data.session.user;
+    if (
+      result.data &&
+      result.data.session
+    ) {
+
+      currentUser =
+        result.data.session.user;
 
       await loadMember();
 
     }
+
   }
+
+
+  // ==================================================
+  // START APPLICATION
+  // ==================================================
 
   checkSession();
 
