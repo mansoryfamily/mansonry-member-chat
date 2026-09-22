@@ -234,7 +234,7 @@
 
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_7hjRDSl_WCP28nPoTWm5tg_1Qjn0cXa";
-
+alert(window.supabase ? "SUPABASE LOADED" : "SUPABASE NOT LOADED");
   const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
